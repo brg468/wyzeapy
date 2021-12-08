@@ -7,8 +7,8 @@ import time
 from typing import Any, Dict
 
 from wyzeapy.const import FORD_APP_KEY
-from wyzeapy.types import ThermostatProps
 from wyzeapy.crypto import ford_create_signature
+from wyzeapy.models import ThermostatProps
 
 
 def ford_create_payload(access_token: str, payload: Dict[str, Any],

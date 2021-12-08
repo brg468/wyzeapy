@@ -7,10 +7,9 @@ import asyncio
 import os
 import time
 import unittest
-from typing import Optional
 
-import wyzeapy
 from wyzeapy import Wyzeapy
+from wyzeapy.models import DeviceTypes
 from wyzeapy.services.bulb_service import Bulb, BulbService
 from wyzeapy.services.camera_service import Camera, CameraService
 from wyzeapy.services.hms_service import HMSService, HMSMode
@@ -19,7 +18,6 @@ from wyzeapy.services.sensor_service import Sensor, SensorService
 from wyzeapy.services.switch_service import Switch, SwitchService
 from wyzeapy.services.thermostat_service import Thermostat, Preset, HVACState, ThermostatService, HVACMode, FanMode, \
     TemperatureUnit
-from wyzeapy.types import DeviceTypes, Event
 
 USERNAME = os.getenv("WYZE_EMAIL")
 PASSWORD = os.getenv("WYZE_PASSWORD")
@@ -48,8 +46,8 @@ class TestWyzeClient(unittest.IsolatedAsyncioTestCase):
     async def test_get_device_ids(self):
         client = await login()
         device_ids = await client.unique_device_ids
-        for id in device_ids:
-            print(id)
+        for d_id in device_ids:
+            print(d_id)
 
     async def test_notifications_on(self):
         client = await login()
@@ -89,12 +87,14 @@ class TestWyzeClient(unittest.IsolatedAsyncioTestCase):
         assert type(await client.thermostat_service) is ThermostatService
         await client.async_close()
 
-    async def hms_service(self):
+    @staticmethod
+    async def hms_service():
         client = await login()
         assert type(await client.hms_service) is HMSService
         await client.async_close()
 
-    async def sensor_service(self):
+    @staticmethod
+    async def sensor_service():
         client = await login()
         assert type(await client.sensor_service) is SensorService
         await client.async_close()

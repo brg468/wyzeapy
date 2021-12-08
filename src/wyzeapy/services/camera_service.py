@@ -12,9 +12,9 @@ from typing import Any, List, Optional, Dict, Callable, Tuple
 from aiohttp import ClientOSError, ContentTypeError
 
 from wyzeapy.exceptions import UnknownApiError
+from wyzeapy.models import Device, DeviceTypes, Event, PropertyIDs
 from wyzeapy.services.base_service import BaseService
 from wyzeapy.services.update_manager import DeviceUpdater
-from wyzeapy.types import Device, DeviceTypes, Event, PropertyIDs
 from wyzeapy.utils import return_event_for_device, create_pid_pair
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,10 +49,10 @@ class CameraService(BaseService):
 
         # Update camera state
         state_response: List[Tuple[PropertyIDs, Any]] = await self._get_property_list(camera)
-        for property, value in state_response:
-            if property is PropertyIDs.AVAILABLE:
+        for prop, value in state_response:
+            if prop is PropertyIDs.AVAILABLE:
                 camera.available = value == "1"
-            if property is PropertyIDs.ON:
+            if prop is PropertyIDs.ON:
                 camera.on = value == "1"
 
         return camera
@@ -82,9 +82,6 @@ class CameraService(BaseService):
                         _LOGGER.error(f"A network error was detected: {e}")
                     except ContentTypeError as e:
                         _LOGGER.error(f"Server returned unexpected ContentType: {e}")
-                    except RuntimeError as e:
-                        if e == RuntimeError("Session is closed"):
-                            asyncio.run_coroutine_threadsafe(self._auth_lib.gen_session(), loop).result()
 
     async def get_cameras(self) -> List[Camera]:
         if self._devices is None:

@@ -1,0 +1,25 @@
+from enum import Enum
+
+
+class DeviceTypes(Enum):
+    LIGHT = "Light"
+    PLUG = "Plug"
+    OUTDOOR_PLUG = "OutdoorPlug"
+    MESH_LIGHT = "MeshLight"
+    CAMERA = "Camera"
+    CHIME_SENSOR = "ChimeSensor"
+    CONTACT_SENSOR = "ContactSensor"
+    MOTION_SENSOR = "MotionSensor"
+    WRIST = "Wrist"
+    BASE_STATION = "BaseStation"
+    SCALE = "WyzeScale"
+    LOCK = "Lock"
+    GATEWAY = "gateway"
+    COMMON = "Common"
+    VACUUM = "JA_RO2"
+    HEADPHONES = "JA.SC"
+    THERMOSTAT = "Thermostat"
+    GATEWAY_V2 = "GateWay"
+    UNKNOWN = "Unknown"
+    SENSE_V2_GATEWAY = "S1Gateway"
+    KEYPAD = "Keypad"

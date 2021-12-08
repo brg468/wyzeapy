@@ -11,8 +11,8 @@ from typing import List, Callable, Tuple, Optional
 from aiohttp import ClientOSError, ContentTypeError
 
 from wyzeapy.exceptions import UnknownApiError
+from wyzeapy.models import Device, PropertyIDs, DeviceTypes
 from wyzeapy.services.base_service import BaseService
-from wyzeapy.types import Device, PropertyIDs, DeviceTypes
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -31,9 +31,9 @@ class SensorService(BaseService):
             sensor.device_params = await self.get_updated_params(sensor.mac)
         properties = await self._get_device_info(sensor)
 
-        for property in properties['data']['property_list']:
-            pid = property['pid']
-            value = property['value']
+        for prop in properties['data']['property_list']:
+            pid = prop['pid']
+            value = prop['value']
 
             try:
                 if PropertyIDs(pid) == PropertyIDs.CONTACT_STATE:

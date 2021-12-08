@@ -7,8 +7,8 @@ import logging
 from enum import Enum
 from typing import Any, Dict, List
 
+from wyzeapy.models import Device, ThermostatProps, DeviceTypes
 from wyzeapy.services.base_service import BaseService
-from wyzeapy.types import Device, ThermostatProps, DeviceTypes
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -62,12 +62,12 @@ class ThermostatService(BaseService):
         properties = (await self._thermostat_get_iot_prop(thermostat))['data']['props']
 
         device_props = []
-        for property in properties:
+        for prop in properties:
             try:
-                prop = ThermostatProps(property)
-                device_props.append((prop, properties[property]))
+                prop = ThermostatProps(prop)
+                device_props.append((prop, properties[prop]))
             except ValueError as e:
-                _LOGGER.debug(f"{e} with value {properties[property]}")
+                _LOGGER.debug(f"{e} with value {properties[prop]}")
 
         thermostat_props = device_props
         for prop, value in thermostat_props:

@@ -4,12 +4,12 @@
 #  the license with this file. If not, please write to:
 #  joshua@mulliken.net to receive a copy
 import logging
-import time
-from typing import Dict, Any, List, Optional, Set
 from inspect import iscoroutinefunction
+from typing import List, Optional, Set, Callable
 
 from wyzeapy.const import PHONE_SYSTEM_TYPE, APP_VERSION, SC, APP_VER, SV, PHONE_ID, APP_NAME, OLIVE_APP_ID, APP_INFO
 from wyzeapy.crypto import olive_create_signature
+from wyzeapy.exceptions import TwoFactorAuthenticationEnabled
 from wyzeapy.payload_factory import olive_create_user_info_payload
 from wyzeapy.services.base_service import BaseService
 from wyzeapy.services.bulb_service import BulbService
@@ -21,7 +21,6 @@ from wyzeapy.services.switch_service import SwitchService
 from wyzeapy.services.thermostat_service import ThermostatService
 from wyzeapy.utils import check_for_errors_standard
 from wyzeapy.wyze_auth_lib import WyzeAuthLib, Token
-from wyzeapy.exceptions import TwoFactorAuthenticationEnabled
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ class Wyzeapy:
     # _client: Client
     _auth_lib: WyzeAuthLib
 
-    def __init__(self):
+    def __init__(self, config=None):
         self._bulb_service = None
         self._switch_service = None
         self._camera_service = None
@@ -42,7 +41,8 @@ class Wyzeapy:
         self._email = None
         self._password = None
         self._service: Optional[BaseService] = None
-        self._token_callbacks: List[function] = []
+        self._token_callbacks: List[Callable] = []
+        self._config = config
 
     @classmethod
     async def create(cls):
@@ -71,11 +71,20 @@ class Wyzeapy:
         try:
             if token:
                 # User token supplied, lets go ahead and use it and refresh the access token if needed.
-                self._auth_lib = await WyzeAuthLib.create(email, password, token, token_callback=self.execute_token_callbacks)
+                self._auth_lib = await WyzeAuthLib.create(
+                    email,
+                    password,
+                    token,
+                    token_callback=self.execute_token_callbacks
+                )
                 await self._auth_lib.refresh_if_should()
                 self._service = BaseService(self._auth_lib)
             else:
-                self._auth_lib = await WyzeAuthLib.create(email, password, token_callback=self.execute_token_callbacks)
+                self._auth_lib = await WyzeAuthLib.create(
+                    email,
+                    password,
+                    token_callback=self.execute_token_callbacks
+                )
                 await self._auth_lib.get_token_with_username_password(email, password)
                 self._service = BaseService(self._auth_lib)
         except TwoFactorAuthenticationEnabled as error:

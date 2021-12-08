@@ -1,19 +1,21 @@
 from asyncio import sleep
 from dataclasses import dataclass, field
 from heapq import heappush, heappop
-from typing import Any
 from math import ceil
-from wyzeapy.types import Device
+from typing import Any
+
+from wyzeapy.models import Device
 
 INTERVAL = 300
 MAX_SLOTS = 225
 
+
 @dataclass(order=True)
 class DeviceUpdater(object):
-    device: Device=field(compare=False)  # The device that will be updated
-    service: Any=field(compare=False)
-    update_in: int # A countdown to zero that will tell the priority queue that it is time to update this device
-    updates_per_interval: int=field(compare=False) # The number of updates that should happen every 5 minutes
+    device: Device = field(compare=False)  # The device that will be updated
+    service: Any = field(compare=False)
+    update_in: int  # A countdown to zero that will tell the priority queue that it is time to update this device
+    updates_per_interval: int = field(compare=False)  # The number of updates that should happen every 5 minutes
 
     def __init__(self, service, device: Device, update_interval: int):
         """
@@ -50,6 +52,7 @@ class DeviceUpdater(object):
         if self.updates_per_interval > 1:
             self.updates_per_interval -= 1
 
+
 class UpdateManager:
     # Holds all the logic for when to update the devices
     updaters = []
@@ -73,11 +76,10 @@ class UpdateManager:
             # We then reduce the counter for all the other updaters
             self.tick_tock()
             # Then we update the target device
-            await updater.update() # It will only update if it is time for it to update. Otherwise it just reduces its update_in counter.
+            await updater.update()  # It will only update if it is time for it to update. Otherwise it just reduces its update_in counter.
             # Then we put it back at the end of the queue. Or the front again if it wasn't ready to update
             heappush(self.updaters, updater)
             await sleep(1)
-
 
     def filled_slots(self):
         # This just returns the number of available slots

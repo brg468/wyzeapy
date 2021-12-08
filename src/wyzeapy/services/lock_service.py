@@ -3,8 +3,8 @@
 #  of the attached license. You should have received a copy of
 #  the license with this file. If not, please write to:
 #  joshua@mulliken.net to receive a copy
+from wyzeapy.models import Device, DeviceTypes
 from wyzeapy.services.base_service import BaseService
-from wyzeapy.types import Device, PropertyIDs, DeviceTypes
 
 
 class Lock(Device):
