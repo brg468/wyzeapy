@@ -95,13 +95,17 @@ class PropertyIDs(Enum):
     BRIGHTNESS = "P1501"  # From 0-100
     COLOR_TEMP = "P1502"  # In Kelvin
     COLOR = "P1507"  # As a hex string RrGgBb
-    COLOR_MODE = "P1508"  # 1 = Basic Color, 2 = White, 3 = Music Mode
+    COLOR_MODE = "P1508"  # 1 = Basic Color, 2 = White, 3 = Effect Mode
+    LIGHTSTRIP_EFFECTS = "P1522"
+    LIGHTSTRIP_MUSIC_MODE = "P1535"
     DOOR_OPEN = "P2001"  # 0 if the door is closed
     CONTACT_STATE = "P1301"
     MOTION_STATE = "P1302"
     CAMERA_SIREN = "P1049"
     FLOOD_LIGHT = "P1056"
     SUN_MATCH = "P1528"
+    MOTION_DETECTION = "P1047"  # Current Motion Detection State of the Camera
+    MOTION_DETECTION_TOGGLE = "P1001"  # This toggles Camera Motion Detection On/Off
 
 
 class WallSwitchProps(Enum):
