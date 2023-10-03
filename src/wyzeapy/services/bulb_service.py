@@ -22,6 +22,7 @@ class Bulb(Device):
 
     on: bool = False
     cloud_fallback = False
+    local_fail_count = 0
 
     def __init__(self, dictionary: Dict[Any, Any]):
         super().__init__(dictionary)
@@ -127,7 +128,7 @@ class BulbService(BaseService):
         ):
             # Local Control
             if local_control and not bulb.cloud_fallback:
-                await self._local_bulb_command(bulb, plist)
+                await self._local_bulb_command(bulb, plist, local_control_attempts)
 
             # Cloud Control
             elif bulb.type is DeviceTypes.MESH_LIGHT:  # Sun match for mesh bulbs needs to be set on a different endpoint for some reason
@@ -139,10 +140,8 @@ class BulbService(BaseService):
             else:
                 await self._run_action_list(bulb, plist)  # Lightstrips
 
-    async def turn_off(self, bulb: Bulb, local_control):
-        plist = [
-            create_pid_pair(PropertyIDs.ON, "0")
-        ]
+    async def turn_off(self, bulb: Bulb, local_control, local_control_attempts):
+        plist = [create_pid_pair(PropertyIDs.ON, "0")]
 
         if bulb.type in [
             DeviceTypes.LIGHT
@@ -152,7 +151,7 @@ class BulbService(BaseService):
             bulb.type in [DeviceTypes.MESH_LIGHT, DeviceTypes.LIGHTSTRIP]
         ):
             if local_control and not bulb.cloud_fallback:
-                await self._local_bulb_command(bulb, plist)
+                await self._local_bulb_command(bulb, plist, local_control_attempts)
             else:
                 await self._run_action_list(bulb, plist)
 
@@ -209,5 +208,3 @@ class BulbService(BaseService):
         ]
 
         await self._run_action_list(bulb, plist)
-
-
