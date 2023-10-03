@@ -581,7 +581,7 @@ class BaseService:
 
         check_for_errors_iot(response_json)
 
-    async def _local_bulb_command(self, bulb, plist):
+    async def _local_bulb_command(self, bulb, plist, local_attempts):
         # await self._auth_lib.refresh_if_should()
 
         characteristics = {
@@ -609,7 +609,12 @@ class BaseService:
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, data=payload_str) as response:
                     print(await response.text())
+                    # Reset fail count if local command works
+                    bulb.local_fail_count = 0
         except aiohttp.ClientConnectionError:
-            _LOGGER.warning("Failed to connect to bulb %s, reverting to cloud." % bulb.mac)
             await self._run_action_list(bulb, plist)
+            bulb.local_fail_count += 1
+            _LOGGER.warning("Failed to connect to bulb %s, reverting to cloud. Attempt %d of %d" % (bulb.mac, bulb.local_fail_count, local_attempts))
+            if bulb.local_fail_count < local_attempts:
+                return
             bulb.cloud_fallback = True
