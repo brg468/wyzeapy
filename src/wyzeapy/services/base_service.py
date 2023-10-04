@@ -618,3 +618,5 @@ class BaseService:
             if bulb.local_fail_count < local_attempts:
                 return
             bulb.cloud_fallback = True
+            _LOGGER.warning("Maximum number of failed attempts reached, local control disabled.")
+
