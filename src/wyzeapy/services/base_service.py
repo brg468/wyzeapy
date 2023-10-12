@@ -614,9 +614,8 @@ class BaseService:
         except aiohttp.ClientConnectionError:
             await self._run_action_list(bulb, plist)
             bulb.local_fail_count += 1
-            _LOGGER.warning("Failed to connect to bulb %s, reverting to cloud. Attempt %d of %d" % (bulb.mac, bulb.local_fail_count, local_attempts))
+            _LOGGER.warning("Failed to connect to bulb %s, reverting to cloud. Attempt %d of %d" % (bulb.nickname, bulb.local_fail_count, local_attempts))
             if bulb.local_fail_count < local_attempts:
                 return
             bulb.cloud_fallback = True
-            _LOGGER.warning("Maximum number of failed attempts reached, local control disabled.")
-
+            _LOGGER.warning("Maximum number of failed attempts reached on bulb %s, local control disabled." % (bulb.nickname))
